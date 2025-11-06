@@ -2,43 +2,61 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>192.168.7.157/integra</title>
+    <title>Fallback Automático</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #fafafa;
             text-align: center;
-            padding-top: 50px;
+            padding: 40px 10px;
         }
         input[type="text"] {
             width: 60%;
             padding: 10px;
             font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
         }
         button {
             padding: 10px 20px;
             font-size: 16px;
             margin-left: 10px;
             cursor: pointer;
-            background-color: #0073e6;
-            color: white;
             border: none;
             border-radius: 8px;
+            background-color: #0073e6;
+            color: white;
+            transition: background-color 0.2s ease-in-out;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 15px;
+            color: #555;
         }
         iframe {
             margin-top: 30px;
-            width: 560px;
-            height: 315px;
+            width: 100%;
+            max-width: 560px;
+            aspect-ratio: 16 / 9;
             border: none;
             border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
-        p.erro { color: red; }
+        p.erro {
+            color: red;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>192.168.7.157/integra</h2>
+    <h2>🎥Fallback Automático</h2>
     <input type="text" id="youtubeLink" value="https://www.youtube.com/watch?v=xS41l1HLGDI">
-    <button onclick="carregarVideo()">Carregar</button>
+    <button onclick="carregarVideo()">Carregar vídeo</button>
+
+    <div id="status"></div>
     <div id="videoContainer"></div>
 
     <script>
@@ -48,13 +66,16 @@
             const link = document.getElementById('youtubeLink').value.trim();
             const videoId = extrairVideoId(link);
             const container = document.getElementById('videoContainer');
+            const status = document.getElementById('status');
 
             if (!videoId) {
-                container.innerHTML = "<p class='erro'>Link inválido. Tente novamente.</p>";
+                container.innerHTML = "<p class='erro'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
                 return;
             }
 
-            // tenta o player do YouTube normal
+            status.textContent = "⏳ Carregando vídeo...";
+            container.innerHTML = "";
+
             const ytUrl = `https://www.youtube.com/embed/${videoId}`;
             const invUrl = `https://yewtu.be/embed/${videoId}`;
 
@@ -62,11 +83,17 @@
             iframe.src = ytUrl;
             iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
             iframe.allowFullscreen = true;
+
+            // fallback automático se o YouTube for bloqueado
             iframe.onerror = () => {
-                iframe.src = invUrl; // troca para fallback
+                status.textContent = "⚠️ Vídeo carregado pelo modo alternativo (rede restrita detectada)";
+                iframe.src = invUrl;
             };
 
-            container.innerHTML = '';
+            iframe.onload = () => {
+                status.textContent = "✅ Vídeo carregado com sucesso";
+            };
+
             container.appendChild(iframe);
         }
 
@@ -78,6 +105,7 @@
     </script>
 </body>
 </html>
+
 
 
 
