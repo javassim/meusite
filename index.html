@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Carregar Vídeo do YouTube</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        iframe {
+            margin-top: 30px;
+            width: 560px;
+            height: 315px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Carregar Vídeo do YouTube</h2>
+    <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube">
+    <button onclick="carregarVideo()">Carregar vídeo</button>
+
+    <div id="videoContainer"></div>
+
+    <script>
+        function carregarVideo() {
+            const link = document.getElementById('youtubeLink').value;
+            const videoId = extrairVideoId(link);
+            const container = document.getElementById('videoContainer');
+
+            if (videoId) {
+                container.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+                `;
+            } else {
+                container.innerHTML = "<p style='color:red;'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
+            }
+        }
+
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\n?#]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        // 🔹 Carrega o vídeo automaticamente ao abrir a página
+        window.onload = function() {
+            const linkPadrao = "https://www.youtube.com/watch?v=Xg4-_TcGZE4";
+            document.getElementById('youtubeLink').value = linkPadrao;
+            carregarVideo();
+        };
+    </script>
+</body>
+</html>
