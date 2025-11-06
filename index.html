@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Vídeo Teste - Modo Compatível</title>
+    <title>Vídeo Teste - Compatível com Rede Restrita</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,13 +13,19 @@
         h2 {
             margin-bottom: 30px;
         }
+        figure.wp-block-embed {
+            display: flex;
+            justify-content: center;
+        }
         .wp-block-embed__wrapper {
+            width: 100%;
+            max-width: 560px;
             display: flex;
             justify-content: center;
         }
         iframe {
-            width: 500px;
-            height: 281px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
             border: none;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -32,13 +38,11 @@
     <figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube">
         <div class="wp-block-embed__wrapper">
             <iframe 
-                title="Stranger Things 5 | Trailer oficial | Netflix" 
-                width="500" 
-                height="281" 
-                src="https://www.youtube.com/embed/Wb3kaP580kA?feature=oembed" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerpolicy="strict-origin-when-cross-origin" 
+                title="Stranger Things 5 | Trailer oficial | Netflix"
+                src="https://www.youtube-nocookie.com/embed/Wb3kaP580kA?feature=oembed"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen>
             </iframe>
         </div>
