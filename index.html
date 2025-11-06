@@ -2,67 +2,38 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Carregar Vídeo do YouTube</title>
+    <title>Vídeo Teste - YouTube</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #fafafa;
             text-align: center;
-            padding-top: 50px;
+            padding-top: 60px;
         }
-        input[type="text"] {
-            width: 60%;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-left: 10px;
-            cursor: pointer;
+        h2 {
+            margin-bottom: 30px;
         }
         iframe {
-            margin-top: 30px;
-            width: 560px;
-            height: 315px;
+            width: 500px;
+            height: 281px;
             border: none;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
-    <h2>Carregar Vídeo do YouTube</h2>
-    <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube">
-    <button onclick="carregarVideo()">Carregar vídeo</button>
-
-    <div id="videoContainer"></div>
-
-    <script>
-        function carregarVideo() {
-            const link = document.getElementById('youtubeLink').value;
-            const videoId = extrairVideoId(link);
-            const container = document.getElementById('videoContainer');
-
-            if (videoId) {
-                container.innerHTML = `
-                    <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
-                `;
-            } else {
-                container.innerHTML = "<p style='color:red;'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
-            }
-        }
-
-        function extrairVideoId(url) {
-            const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\n?#]+)/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        // 🔹 Carrega o vídeo automaticamente ao abrir a página
-        window.onload = function() {
-            const linkPadrao = "https://www.youtube.com/watch?v=Xg4-_TcGZE4";
-            document.getElementById('youtubeLink').value = linkPadrao;
-            carregarVideo();
-        };
-    </script>
+    <h2>Vídeo Teste do YouTube</h2>
+    <iframe 
+        title="Video teste"
+        width="500" 
+        height="281" 
+        src="https://www.youtube.com/embed/xS41l1HLGDI?feature=oembed" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allowfullscreen>
+    </iframe>
 </body>
 </html>
+
