@@ -2,20 +2,39 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Vídeo Teste - Compatível com Rede Restrita2</title>
+    <title>Carregar Vídeo do YouTube - Compatível com Rede Restrita</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #fafafa;
             text-align: center;
-            padding-top: 60px;
+            padding-top: 50px;
         }
-        h2 {
-            margin-bottom: 30px;
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #0073e6;
+            color: white;
+            transition: background-color 0.2s ease-in-out;
+        }
+        button:hover {
+            background-color: #005bb5;
         }
         figure.wp-block-embed {
             display: flex;
             justify-content: center;
+            margin-top: 30px;
         }
         .wp-block-embed__wrapper {
             width: 100%;
@@ -30,25 +49,54 @@
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
+        p.erro {
+            color: red;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>Vídeo Teste - Compatível com Rede Restrita2</h2>
+    <h2>Carregar Vídeo do YouTube (Modo Rede Restrita)</h2>
+    <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube">
+    <button onclick="carregarVideo()">Carregar vídeo</button>
 
-    <figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube">
-        <div class="wp-block-embed__wrapper">
-            <iframe 
-                title="Stranger Things 5 | Trailer oficial | Netflix"
-                src="https://www.youtube-nocookie.com/embed/Wb3kaP580kA?feature=oembed"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-            </iframe>
-        </div>
-    </figure>
+    <div id="videoContainer"></div>
+
+    <script>
+        function carregarVideo() {
+            const link = document.getElementById('youtubeLink').value.trim();
+            const videoId = extrairVideoId(link);
+            const container = document.getElementById('videoContainer');
+
+            if (videoId) {
+                container.innerHTML = `
+                    <figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube">
+                        <div class="wp-block-embed__wrapper">
+                            <iframe
+                                title="Vídeo YouTube"
+                                src="https://www.youtube-nocookie.com/embed/${videoId}?feature=oembed"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </figure>
+                `;
+            } else {
+                container.innerHTML = "<p class='erro'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
+            }
+        }
+
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\n?#]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+    </script>
 </body>
 </html>
+
 
 
 
