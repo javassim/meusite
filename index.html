@@ -1,139 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <title>Player sem iframe (thumbnail + fallback local)</title> 
-  <style>
-    body { font-family: Arial, sans-serif; background:#fafafa; text-align:center; padding:40px; }
-    input[type="text"] { width:60%; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:16px; }
-    button { padding:10px 18px; margin-left:8px; border-radius:8px; background:#0073e6; color:#fff; border:none; cursor:pointer; }
-    #playerDiv { margin-top:30px; max-width:720px; margin-left:auto; margin-right:auto; }
-    .thumb { cursor:pointer; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.12); display:inline-block; overflow:hidden; }
-    .thumb img { display:block; width:100%; height:auto; max-width:100%; }
-    .msg { color:#a00; margin-top:12px; }
-    .controls { margin-top:18px; }
-    video { width:100%; aspect-ratio:16/9; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.12); }
-  </style>
+    <meta charset="UTF-8">
+    <title>Carregar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #0073e6;
+            color: white;
+            transition: background-color 0.2s ease-in-out;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        figure.wp-block-embed {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .wp-block-embed__wrapper {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            justify-content: center;
+        }
+        iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        p.erro {
+            color: red;
+            margin-top: 20px;
+        }
+        a.fallback {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #ff4747;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        a.fallback:hover {
+            background-color: #e63e3e;
+        }
+    </style>
 </head>
 <body>
-  <h2>Carregar vídeo (sem iframe)</h2>
+    <h2>Carregar</h2>
+    <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube" value="https://www.youtube.com/watch?v=D6Ac5JpCHmI">
+    <button onclick="carregarVideo()">Carregar</button>
 
-  <div>
-    <input id="youtubeLink" type="text" placeholder="Cole aqui o link do YouTube" value="https://www.youtube.com/watch?v=xS41l1HLGDI">
-    <button onclick="renderizar()">Mostrar na página</button>
-  </div>
+    <div id="videoContainer"></div>
 
-  <div class="controls">
-    <!-- Se você tiver um arquivo hospedado no repositório, coloque a URL aqui -->
-    <input id="hostedUrl" type="text" placeholder="(Opção) URL de vídeo hospedado (ex: /videos/meu.mp4)" style="width:60%; padding:8px; margin-top:8px; border-radius:8px; border:1px solid #ccc;">
-    <div style="margin-top:8px;">
-      <label style="cursor:pointer; color:#333;">
-        Ou selecione um arquivo local:
-        <input id="localFile" type="file" accept="video/*" style="display:none">
-      </label>
-      <button onclick="document.getElementById('localFile').click()">Escolher arquivo</button>
-    </div>
-  </div>
+    <script>
+        window.onload = carregarVideo;
 
-  <div id="playerDiv"></div>
-  <p id="message" class="msg" aria-live="polite"></p>
+        function carregarVideo() {
+            const link = document.getElementById('youtubeLink').value.trim();
+            const videoId = extrairVideoId(link);
+            const container = document.getElementById('videoContainer');
 
-  <script>
-    function extrairVideoId(url) {
-      if (!url) return null;
-      const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
-      const m = url.match(regex);
-      return m ? m[1] : null;
-    }
+            if (videoId) {
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 
-    function renderizar() {
-      const link = document.getElementById('youtubeLink').value.trim();
-      const vid = extrairVideoId(link);
-      const playerDiv = document.getElementById('playerDiv');
-      const message = document.getElementById('message');
-      message.textContent = '';
+                container.innerHTML = `
+                    <figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube">
+                        <div class="wp-block-embed__wrapper">
+                            <iframe
+                                width="560"
+                                height="315"
+                                src="${embedUrl}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                                title="Vídeo incorporado do YouTube">
+                            </iframe>
+                        </div>
+                    </figure>
+                `;
+            } else {
+                container.innerHTML = "<p class='erro'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
+            }
+        }
 
-      // Se houver URL de vídeo hospedado (no repositório / servidor), mostramos direto com <video>
-      const hosted = document.getElementById('hostedUrl').value.trim();
-      if (hosted) {
-        // tenta carregar como vídeo HTML5
-        playerDiv.innerHTML = `
-          <video controls autoplay>
-            <source src="${escapeHtml(hosted)}">
-            Seu navegador não suporta o elemento video.
-          </video>
-        `;
-        return;
-      }
-
-      // Se usuário selecionou um arquivo local (veja handler abaixo que cria objectURL)
-      // Caso contrário, mostramos a thumbnail do YouTube e um botão para abrir o YouTube
-      if (vid) {
-        // As miniaturas públicas do YouTube: maxresdefault -> sddefault -> hqdefault etc.
-        // Vamos usar hqdefault (seguro) — url pública, não extrai vídeo.
-        const thumb = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
-
-        playerDiv.innerHTML = `
-          <div class="thumb" id="thumbBox" style="max-width:720px;">
-            <img id="thumbImg" src="${thumb}" alt="Miniatura do vídeo YouTube">
-          </div>
-          <div style="margin-top:10px;">
-            <button id="openBtn">Abrir no YouTube (nova aba)</button>
-            <button id="openSame">Abrir na mesma aba</button>
-          </div>
-        `;
-
-        // Clique na miniatura: abre YouTube em nova aba (padrão)
-        document.getElementById('thumbBox').addEventListener('click', () => {
-          window.open(`https://www.youtube.com/watch?v=${vid}`, '_blank', 'noopener');
-        });
-
-        document.getElementById('openBtn').addEventListener('click', () => {
-          window.open(`https://www.youtube.com/watch?v=${vid}`, '_blank', 'noopener');
-        });
-
-        document.getElementById('openSame').addEventListener('click', () => {
-          // abre a página do YouTube na mesma aba
-          window.location.href = `https://www.youtube.com/watch?v=${vid}`;
-        });
-
-        // Informação para ambientes restritos
-        // Se a rede bloquear o YouTube inteiro, abrirá nova aba e provavelmente também será bloqueado.
-        message.textContent = 'Se sua rede bloquear YouTube, use a opção de vídeo hospedado ou carregue um arquivo local.';
-      } else {
-        playerDiv.innerHTML = '';
-        message.textContent = 'Link inválido. Insira um link válido do YouTube ou informe um vídeo hospedado/local.';
-      }
-    }
-
-    // Handler para arquivo local
-    document.getElementById('localFile').addEventListener('change', function(e){
-      const file = e.target.files[0];
-      const playerDiv = document.getElementById('playerDiv');
-      const message = document.getElementById('message');
-      message.textContent = '';
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      // coloca <video> no div
-      playerDiv.innerHTML = `
-        <video controls autoplay>
-          <source src="${url}" type="${file.type}">
-          Seu navegador não suporta o elemento video.
-        </video>
-      `;
-    });
-
-    // small helper to escape inserted URLs (basic)
-    function escapeHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    // carrega automaticamente ao abrir
-    window.addEventListener('load', renderizar);
-  </script>
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\n?#]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+    </script>
 </body>
 </html>
-
 
 
 
