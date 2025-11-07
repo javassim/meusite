@@ -1,74 +1,125 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Player de Vídeo Local</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fafafa;
-      text-align: center;
-      padding-top: 50px;
-    }
-
-    h2 {
-      color: #333;
-    }
-
-    video {
-      width: 80%;
-      max-width: 720px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      margin-top: 30px;
-    }
-
-    p {
-      color: #555;
-    }
-
-    .upload-section {
-      margin-top: 20px;
-    }
-
-    input[type="file"] {
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Carregar Vídeo do YouTube (Compatível com Rede Restrita)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #0073e6;
+            color: white;
+            transition: background-color 0.2s ease-in-out;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        figure.wp-block-embed {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .wp-block-embed__wrapper {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            justify-content: center;
+        }
+        iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        p.erro {
+            color: red;
+            margin-top: 20px;
+        }
+        a.fallback {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #ff4747;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        a.fallback:hover {
+            background-color: #e63e3e;
+        }
+    </style>
 </head>
 <body>
+    <h2>Carregar Vídeo do YouTube (Modo Rede Restrita)</h2>
+    <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube" value="https://www.youtube.com/watch?v=xS41l1HLGDI">
+    <button onclick="carregarVideo()">Carregar vídeo</button>
 
-  <h2>Player de Vídeo Local</h2>
+    <div id="videoContainer"></div>
 
-  <!-- Player principal -->
-  <video id="meuVideo" controls poster="thumb.jpg">
-    <source src="video.mp4" type="video/mp4">
-    Seu navegador não suporta o elemento de vídeo HTML5.
-  </video>
+    <script>
+        window.onload = carregarVideo; // carrega o vídeo padrão ao abrir
 
-  <p>Se o vídeo não carregar, verifique se o arquivo <strong>video.mp4</strong> está na mesma pasta do HTML.</p>
+        function carregarVideo() {
+            const link = document.getElementById('youtubeLink').value.trim();
+            const videoId = extrairVideoId(link);
+            const container = document.getElementById('videoContainer');
 
-  <!-- Se quiser trocar o vídeo localmente -->
-  <div class="upload-section">
-    <label for="upload">Ou escolha outro arquivo de vídeo:</label><br>
-    <input type="file" id="upload" accept="video/mp4,video/webm">
-  </div>
+            if (videoId) {
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?feature=oembed&origin=https://tracklist.com.br`;
 
-  <script>
-    // Permite trocar o vídeo localmente sem recarregar a página
-    const upload = document.getElementById('upload');
-    const player = document.getElementById('meuVideo');
+                container.innerHTML = `
+                    <figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube">
+                        <div class="wp-block-embed__wrapper">
+                            <iframe
+                                title="Vídeo YouTube"
+                                src="${embedUrl}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen
+                                onerror="mostrarFallback('${videoId}')">
+                            </iframe>
+                        </div>
+                    </figure>
+                `;
+            } else {
+                container.innerHTML = "<p class='erro'>Link inválido. Por favor, insira um link válido do YouTube.</p>";
+            }
+        }
 
-    upload.addEventListener('change', function() {
-      const arquivo = this.files[0];
-      if (arquivo) {
-        const url = URL.createObjectURL(arquivo);
-        player.src = url;
-        player.play();
-      }
-    });
-  </script>
+        function mostrarFallback(videoId) {
+            const container = document.getElementById('videoContainer');
+            const videoLink = `https://www.youtube.com/watch?v=${videoId}`;
+            container.innerHTML = `
+                <p class='erro'>O vídeo não pôde ser carregado nesta rede.</p>
+                <a class="fallback" href="${videoLink}" target="_blank">🔗 Abrir vídeo no YouTube</a>
+            `;
+        }
 
+        function extrairVideoId(url) {
+            const regex = /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\n?#]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+    </script>
 </body>
 </html>
 
